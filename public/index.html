@@ -1,0 +1,283 @@
+<!DOCTYPE>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- For Custom Styling -->
+     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="CSS/mystyle.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script type="text/javascript" src="JS/jquery.slimscroll.min.js"></script>
+    <script type="text/javascript" src="JS/myscript.js"></script>
+    <script type="text/javascript">
+        $(window).on('load', function() { $(".se-pre-con").delay(2000).fadeOut(200); });
+        $(function(){
+                createDummyRecords();
+                $("#ah-city-items,#ah-category-items,#ah-city-items").slimScroll({
+                height: '202px',
+                size: '6px',
+                position: 'right',
+                color: '#a9a9aa',
+                alwaysVisible: false,
+                distance: '4px',
+                wheelStep: 10,
+                allowPageScroll: false,
+                disableFadeOut: true
+                });
+            
+                $(".ah-show-products").slimScroll({
+                    height: '360px',
+                    size: '6px',
+                    position: 'right',
+                    color: '#a9a9aa',
+                    alwaysVisible: false,
+                    distance: '4px',
+                    wheelStep: 10,
+                    allowPageScroll: false,
+                    disableFadeOut: true
+                });
+                
+                $( "ul#ah-category-items > li.ah-level-1" ).hover(function(){
+                    let $element = $(this);
+                    $element.find("ul").toggle(); //Find child ul element
+                });
+            
+                $( "ul#ah-category-items > li.ah-level-1 > ul li" ).click(function(e){
+                   e.stopPropagation(); //Prevent child elements to be clicked
+                });
+                
+                let eleArray = [".ah-city",".ah-category",".ah-product"]; //create an array of elements by class, so we can easily toggle tab
+                $(".ah-txtbox").click(function(){
+                    $element = $(this);
+                    let val = $element.attr("name").valueOf();
+                    switch(val) {
+                        case "showcitieslist":
+                            $(eleArray[1]).css("display","none"); //hide previous category tab
+                            $(eleArray[2]).css("display","none"); //hide previous product tab
+                            
+                            $(eleArray[0]).toggle(); //show city tab
+                            break;
+                        case "showcategorylist":
+                            $(eleArray[0]).css("display","none"); //hide previous city tab
+                            $(eleArray[2]).css("display","none"); //hide previous product tab
+                             
+                            $(eleArray[1]).toggle(); //show category tab
+                            break;
+                        default:
+                            $(eleArray[0]).css("display","none"); //hide previous city tab
+                            $(eleArray[1]).css("display","none"); //hide previous category tab
+                            $(eleArray[2]).css("display","none"); //hide previous product tab
+                            break;
+                    }
+                });
+                
+                $(".ah-search-criteria").mouseleave(function () {
+                    $(eleArray[0]).css("display","none"); //hide previous city tab
+                    $(eleArray[1]).css("display","none"); //hide previous category tab
+                    $(eleArray[2]).css("display","none"); //hide previous product tab
+                });
+
+                $("#customsort").change(function (){
+                    let value = $(this).val();
+                    CustomSort(value);
+                });
+
+                let ProductsTitle;
+                
+
+                $("#product").keyup(function(e){
+                    ProductsTitle = AutoComplete();
+                    $("#product").autocomplete({
+                    source: ProductsTitle
+                });
+                    if (e.keyCode == 13) {
+                        FilterArray();
+                    }  
+                });
+                
+            });
+        
+    </script>
+</head>
+
+<body>
+    <div class="se-pre-con"></div>
+    <header>
+        <nav class="ah-navbar">
+            <div class="ah-logo">
+                <span class="ah-lbl-logo">
+                        <a href="javascript:void(0)">Classified</a>
+                    </span>
+            </div>
+            <div class="ah-nav-menu">
+                <ul id="ah-menus">
+                    <li>
+                        <input class="ah-txtbox" type="text" name="CommaSepListProducts" placeholder="Parent Category, Child Category,Product City, Product Title, Product Brand, Product Price" onkeyup="validate(event,this.value)" />
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="ah-alert-success">
+            <strong>Success!</strong>
+        </div>
+        <div class="ah-alert-warning">
+            <strong>Warning!</strong>
+        </div>
+    </header>
+    <div class="wrapper">
+        <div class="ah-search-criteria">
+            <ul id="ah-menus">
+                <li>
+                    <div class="ah-city">
+                    <ul id="ah-city-items" class="ah-row-color">
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">All Cities </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Karachi </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Hyderabad </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Islamabad </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Lahore </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Rawalpindi </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Quetta </a></li>
+                        <li><a href="javascript:void(0)" onclick="SetCityName(this)">Peshawar </a></li>
+                    </ul>
+                    </div>
+                    <input id="city" class="ah-txtbox" type="text" name="showcitieslist" placeholder="All City" readonly />
+                    <span><img src="Img/arrow-point-to-down.png" width="16" height="16"></span>
+                    
+                </li>
+                <li>
+                    <div class="ah-category">
+                    <ul id="ah-category-items" class="ah-row-color">
+                        <li class="ah-level-1"><a href="javascript:void(0)"onclick="SetChildCategory(this)"> All Categories</a> </li>
+                        <li class="ah-level-1">Mobiles
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Mobiles Phones</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Tablets</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Accessories</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Furniture
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Sofa & Dining</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Bed & Wardrobes</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Home Decor & Garden</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Fashion
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Clothes</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Footwear</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Accessories</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Cars
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Cars</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Commercial Vehicles</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Spare Parts</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Bikes
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Motorcycles</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Scooters</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Bicycles</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Property
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Houses</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Apartments</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">PG & Roommates</a></li>
+                            </ul>
+                        </li>
+                        <li class="ah-level-1">Pets
+                            <ul>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Dogs</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Aquariums</a></li>
+                                <li><a href="javascript:void(0)" style="color: #9e9e9e;font-weight: 400;" onclick="SetChildCategory(this)">Pet Food & Accessories</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    </div>
+                    <input id="childCategory" class="ah-txtbox" type="text" name="showcategorylist" placeholder="All Categories" readonly />
+                    <span><img src="Img/arrow-point-to-down.png" width="16" height="16"></span>
+                </li>
+                
+                <li>
+                    <!--<div class="ah-product">
+                    <ul id="ah-city-items" class="ah-row-color">
+                        <li>Iphone</li>
+                        <li>Windows Phone</li>
+                        <li>Huawei</li>
+                        <li>LG</li>
+                        <li>Samsung</li>
+                        <li>Q-Mobile</li>
+                        <li>Infinix</li>
+                    </ul>
+                    </div>-->
+                    <input id="product" class="ah-txtbox" type="text" name="showproductlist" placeholder="Product Name" />
+                    <span><img src="Img/search.png" width="16" height="16"></span>
+                </li>
+                
+            </ul>
+        </div>
+        
+        
+        
+        <div class="ah-middle-content">
+            <div id="ah-sortbar">
+                <div id="adswithphotos">
+                    <span>Ads with Photos <label style="color: #909090">1,016,96</label></span>
+                </div>
+                <div id="adswithsorting">
+                    <ul style="text-align: right;">
+                        <li style="display: inline-block; text-align: center;">View:</li>
+                        <li style="display: inline-block; text-align: center;">
+                            <img class="view" src="Img/list-bullets.png">
+                        </li>
+                        <li style="display: inline-block; text-align: center;">
+                            <img class="view" src="Img/menu.png">
+                        </li>
+                        <li style="display: inline-block; text-align: center;">SortBy:</li>
+                        <li style="display: inline-block; text-align: center;">
+                            <select id="customsort">
+                                <option value="0">Price: Rs Low to High</option>
+                                <option value="1">Price: Rs High to Low</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="ah-show-products">
+            </div>
+        </div>
+    </div>
+<footer>
+    <div class="ah-social-icon">
+        <ul>
+            <li>
+                <span class="circle">
+                                    <a href="https://www.facebook.com/ahmeraliahsan"><img src="Img/facebook-orange.png" alt="facebook"></a>
+                                </span>
+            </li>
+            <li>
+                <span class="circle">
+                                    <a href="https://github.com/AhmerAli"><img src="Img/github-orange.png" alt="facebook"></a>
+                                </span>
+            </li>
+            <li>
+                <span class="circle">
+            <a href="https://stackoverflow.com/users/5869145/ahmer-ali-ahsan"><img src="Img/stack-overflow-orange.png" alt="facebook"></a>
+        </span>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <span id="ah-footer-company">Copyright © | 2016 Ahmer Ali Ahsan</span>
+    </div>
+</footer>
+</body>
+
+</html>
