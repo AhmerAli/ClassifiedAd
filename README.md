@@ -7,7 +7,7 @@ Project Type: Client Side
 
 TypeScript Assignment # 2
 
-[Demo] : (https://classifiedad-87a03.firebaseapp.com/)
+[Demo] : (https://classifiedad-a4d26.firebaseapp.com/)
 
 Programming Paradigm : Object-Oriented
 
